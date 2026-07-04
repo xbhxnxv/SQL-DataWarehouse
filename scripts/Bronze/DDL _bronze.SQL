@@ -10,15 +10,14 @@ Run this script to re-define the DDL structure of 'bronze' Tables
 */
 if object_id ('bronze.crm_cust_info','u') is not null
 	drop table bronze.crm_cust_info;
-
 CREATE TABLE bronze.crm_cust_info (
-	prd_id			int,
-	prd_key			nvarchar(50),
-	prd_nm			nvarchar(50),
-	prd_cost		int,
-	prd_line		nvarchar(50),
-	prd_start_dt	datetime,
-	prd_end_dt		datetime
+	cst_id INT,
+	cst_key NVARCHAR(50),
+	cst_firstname NVARCHAR (50),
+	cst_lastname NVARCHAR (50),
+	cst_material_status NVARCHAR(50),
+	cst_gndr NVARCHAR(50),
+	cst_create_date DATE
 );
 go
 
