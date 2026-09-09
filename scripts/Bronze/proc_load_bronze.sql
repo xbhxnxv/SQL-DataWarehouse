@@ -123,16 +123,16 @@ begin
 		/* 4. CAT*/
 
 		print'....................................'
-		print'Loading data into bronze.erp__cat_g1v2'
+		print'Loading data into bronze.erp_px_cat_g1v2'
 		print'------------------------------------'
 
-		print'>> truncating table bronze.erp__cat_g1v2'
-		truncate table bronze.erp__cat_g1v2;
+		print'>> truncating table bronze.erp_px_cat_g1v2'
+		truncate table bronze.erp_px_cat_g1v2;
 
-		print'>> inserting data into bronze.erp__cat_g1v2'
-		
+		print'>> inserting data into bronze.erp_px_cat_g1v2'
+
 		SET @start_time = GETDATE();
-		bulk insert bronze.erp__cat_g1v2
+		bulk insert bronze.erp_px_cat_g1v2
 		from 'C:\Users\ASUS\Desktop\me\SQL\MySQL\sql-data-warehouse-project\datasets\source_erp\PX_CAT_G1V2.csv'
 		with(
 			firstrow = 2,
@@ -140,7 +140,7 @@ begin
 			tablock
 		);
 
-		SET @start_time = GETDATE();
+		SET @end_time = GETDATE();
 		print'>> load duration'+ CAST(DATEDIFF(SECOND, @start_time, @end_time) AS VARCHAR(10)) +' seconds';
 		
 ----------------------------------------------------------------
@@ -237,5 +237,3 @@ select count(*) from bronze.erp_loc_a101*/
 
 --track etl duration
 -- helps to identify bottlenecks, optimize performance, and ensure timely data availability for analysis and reporting.
-
-I
