@@ -10,9 +10,7 @@ The warehouse organizes data into three layers, each a schema in the `DataWareho
 - **Silver** — cleaned and standardized data: trimming, deduplication, code-to-label mapping, type casting, and derived columns. Each table carries a `dwh_create_date` audit column.
 - **Gold** — business-ready views modeled as a star schema (two dimensions and one fact) for analytics and reporting.
 
-```
-Sources (CRM + ERP CSVs)  ->  bronze (raw)  ->  silver (cleaned)  ->  gold (star schema views)
-```
+![Data flow](docs/data_flow.svg)
 
 ## Data model (Gold layer)
 
@@ -22,14 +20,22 @@ Sources (CRM + ERP CSVs)  ->  bronze (raw)  ->  silver (cleaned)  ->  gold (star
 | `gold.dim_products`  | Dimension | One row per current product |
 | `gold.fact_sales`    | Fact      | One row per sales order line |
 
-`fact_sales` links to the dimensions through surrogate keys (`customer_key`, `product_key`).
+`fact_sales` links to the dimensions through surrogate keys (`customer_key`, `product_key`). Full field-level documentation is in [`docs/data_catalog.md`](docs/data_catalog.md).
+
+![Star schema](docs/star_schema.svg)
 
 ## Repository structure
 
 ```
 SQL-DataWarehouse/
-├── Datasets/                       -- source CSVs (source_crm, source_erp)
-├── docs/                           -- documentation
+├── Datasets/                       -- source CSVs
+│   ├── source_crm/                 -- cust_info, prd_info, sales_details
+│   └── source_erp/                 -- CUST_AZ12, LOC_A101, PX_CAT_G1V2
+├── docs/
+│   ├── data_catalog.md             -- field-level docs for the Gold layer
+│   ├── naming_conventions.md       -- table/column naming rules
+│   ├── data_flow.svg               -- data-flow diagram
+│   └── star_schema.svg             -- Gold star-schema diagram
 ├── scripts/
 │   ├── init_database.sql           -- create DataWarehouse DB + bronze/silver/gold schemas
 │   ├── Bronze/
@@ -40,7 +46,9 @@ SQL-DataWarehouse/
 │   │   └── proc_load_silver.sql    -- silver.load_silver: transform bronze -> silver
 │   └── Gold/
 │       └── ddl_gold.sql            -- create gold star-schema views
-└── tests/                          -- data quality checks
+└── tests/
+    ├── quality_checks_silver.sql   -- data-quality checks on the Silver layer
+    └── quality_checks_gold.sql     -- integrity checks on the Gold layer
 ```
 
 ## How to run
@@ -62,6 +70,8 @@ SELECT * FROM gold.dim_customers;
 SELECT * FROM gold.dim_products;
 SELECT * FROM gold.fact_sales;
 ```
+
+To validate a load, run the scripts in `tests/` — `quality_checks_silver.sql` after the Silver load, `quality_checks_gold.sql` after the Gold views. Each query is written to return **no rows** when the data is clean.
 
 ## Key transformations (Silver layer)
 
